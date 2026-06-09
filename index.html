@@ -263,33 +263,90 @@ const DB = "https://grupo-thera---tutti-fruti-default-rtdb.firebaseio.com";
 
 // ── LISTA COMPLETA DE PAÍSES DEL MUNDO (en español) ──
 const PAISES = [
-  "afganistán","albania","alemania","andorra","angola","antigua y barbuda","arabia saudita",
-  "argelia","argentina","armenia","australia","austria","azerbaiyán","bahamas","bangladés",
-  "barbados","baréin","bélgica","belice","benín","bielorrusia","birmania","bolivia",
-  "bosnia y herzegovina","botswana","brasil","brunéi","bulgaria","burkina faso","burundi",
-  "bután","cabo verde","camboya","camerún","canadá","catar","chad","chile","china","chipre",
-  "colombia","comoras","congo","corea del norte","corea del sur","costa de marfil","costa rica",
-  "croacia","cuba","dinamarca","dominica","ecuador","egipto","el salvador","emiratos árabes unidos",
-  "eritrea","eslovaquia","eslovenia","españa","estados unidos","estonia","etiopía","filipinas",
-  "finlandia","fiyi","francia","gabón","gambia","georgia","ghana","granada","grecia","guatemala",
-  "guinea","guinea ecuatorial","guinea-bisáu","guyana","haití","honduras","hungría","india",
-  "indonesia","irak","irán","irlanda","islandia","islas marshall","islas salomón","israel",
-  "italia","jamaica","japón","jordania","kazajistán","kenia","kirguistán","kiribati","kuwait",
-  "laos","lesoto","letonia","líbano","liberia","libia","liechtenstein","lituania","luxemburgo",
-  "madagascar","malasia","malaui","maldivas","malí","malta","marruecos","mauricio","mauritania",
-  "méxico","micronesia","moldavia","mónaco","mongolia","montenegro","mozambique","namibia",
-  "nauru","nepal","nicaragua","níger","nigeria","noruega","nueva zelanda","omán","países bajos",
-  "pakistán","palaos","panamá","papúa nueva guinea","paraguay","perú","polonia","portugal",
-  "reino unido","república centroafricana","república checa","república democrática del congo",
-  "república dominicana","ruanda","rumania","rusia","samoa","san cristóbal y nieves",
-  "san marino","san vicente y las granadinas","santa lucía","santo tomé y príncipe","senegal",
-  "serbia","seychelles","sierra leona","singapur","siria","somalia","sri lanka","suazilandia",
-  "sudáfrica","sudán","sudán del sur","suecia","suiza","surinam","tailandia","tanzania",
-  "tayikistán","timor oriental","togo","tonga","trinidad y tobago","túnez","turkmenistán",
-  "turquía","tuvalu","ucrania","uganda","uruguay","uzbekistán","vanuatu","venezuela",
-  "vietnam","yemen","yibuti","zambia","zimbabue",
-  // variantes comunes
-  "usa","eeuu","estados unidos de america","usa","uk","ee.uu"
+  // ── ESPAÑOL ──
+  "afganistán","afganistan","albania","alemania","andorra","angola",
+  "antigua y barbuda","antigua","arabia saudita","arabia saudi","arabia saudí",
+  "argelia","argentina","armenia","australia","austria","azerbaiyán","azerbaiyan",
+  "bahamas","bangladés","banglades","barbados","baréin","barein","bélgica","belgica",
+  "belice","benín","benin","bielorrusia","birmania","bolivia",
+  "bosnia y herzegovina","bosnia","botswana","botsuana","brasil","brunéi","brunei",
+  "bulgaria","burkina faso","burundi","bután","butan",
+  "cabo verde","camboya","camerún","camerun","canadá","canada","catar","chad",
+  "chile","china","chipre","colombia","comoras","congo",
+  "corea del norte","corea del sur","corea","costa de marfil","costa rica",
+  "croacia","cuba","dinamarca","dominica","ecuador","egipto","el salvador",
+  "emiratos árabes unidos","emiratos arabes unidos","emiratos árabes","emiratos",
+  "eritrea","eslovaquia","eslovenia","españa","espana","estados unidos","estonia",
+  "etiopía","etiopia","filipinas","finlandia","fiyi","francia",
+  "gabón","gabon","gambia","georgia","ghana","granada","grecia","guatemala",
+  "guinea","guinea ecuatorial","guinea-bisáu","guinea bisau","guinea bissau","guyana",
+  "haití","haiti","honduras","hungría","hungria","india","indonesia","irak","iraq",
+  "irán","iran","irlanda","islandia","islas marshall","islas salomón","israel",
+  "italia","jamaica","japón","japon","jordania","kazajistán","kazajstan","kenia",
+  "kirguistán","kirguistan","kiribati","kuwait","laos","lesoto","letonia",
+  "líbano","libano","liberia","libia","liechtenstein","lituania","luxemburgo",
+  "madagascar","malasia","malaui","maldivas","malí","mali","malta",
+  "marruecos","mauricio","mauritania","méxico","mexico","micronesia",
+  "moldavia","mónaco","monaco","mongolia","montenegro","mozambique","namibia",
+  "nauru","nepal","nicaragua","níger","niger","nigeria","noruega","nueva zelanda",
+  "nueva zelandia","omán","oman","países bajos","paises bajos","pakistán","pakistan",
+  "palaos","panamá","panama","papúa nueva guinea","papua nueva guinea","paraguay",
+  "perú","peru","polonia","portugal","reino unido","gran bretaña","gran bretana",
+  "república centroafricana","republica centroafricana","república checa","republica checa",
+  "chequia","república democrática del congo","república dominicana","republica dominicana",
+  "ruanda","rumania","romania","rusia","samoa","san cristóbal y nieves","san cristobal",
+  "san marino","san vicente y las granadinas","santa lucía","santa lucia",
+  "santo tomé y príncipe","santo tome","senegal","serbia","seychelles",
+  "sierra leona","singapur","siria","somalia","sri lanka","suazilandia","swazilandia",
+  "eswatini","sudáfrica","sudafrica","sudán","sudan","sudán del sur","sudan del sur",
+  "suecia","suiza","surinam","tailandia","tanzania","tayikistán","tayikistan",
+  "timor oriental","timor-leste","togo","tonga","trinidad y tobago","trinidad",
+  "túnez","tunez","turkmenistán","turkmenistan","turquía","turquia","tuvalu",
+  "ucrania","uganda","uruguay","uzbekistán","uzbekistan","vanuatu","venezuela",
+  "vietnam","yemen","yibuti","zambia","zimbabue","zimbabwe",
+  // nombres populares en español
+  "inglaterra","escocia","gales","irlanda del norte","holanda",
+  "palestina","taiwan","taiwán","kosovo","macedonia","macedonia del norte",
+  "myanmar","belarus","timor","marshall","salomón","solomon",
+
+  // ── INGLÉS ──
+  "afghanistan","albania","algeria","andorra","angola",
+  "antigua and barbuda","argentina","armenia","australia","austria",
+  "azerbaijan","bahamas","bahrain","bangladesh","barbados","belarus",
+  "belgium","belize","benin","bhutan","bolivia","bosnia and herzegovina",
+  "botswana","brazil","brunei","bulgaria","burkina faso","burundi",
+  "cabo verde","cape verde","cambodia","cameroon","canada","central african republic",
+  "chad","chile","china","colombia","comoros","congo",
+  "democratic republic of the congo","costa rica","croatia","cuba","cyprus",
+  "czech republic","czechia","denmark","djibouti","dominica",
+  "dominican republic","ecuador","egypt","el salvador",
+  "equatorial guinea","eritrea","estonia","eswatini","ethiopia",
+  "fiji","finland","france","gabon","gambia","georgia","germany",
+  "ghana","greece","grenada","guatemala","guinea","guinea-bissau",
+  "guyana","haiti","honduras","hungary","india","indonesia","iran","iraq",
+  "ireland","iceland","israel","italy","ivory coast","jamaica","japan",
+  "jordan","kazakhstan","kenya","kiribati","kuwait","kyrgyzstan","laos",
+  "latvia","lebanon","lesotho","liberia","libya","liechtenstein",
+  "lithuania","luxembourg","madagascar","malawi","malaysia","maldives",
+  "mali","malta","marshall islands","mauritania","mauritius","mexico",
+  "micronesia","moldova","monaco","mongolia","montenegro","morocco",
+  "mozambique","myanmar","namibia","nauru","nepal","netherlands","holland",
+  "new zealand","nicaragua","niger","nigeria","north korea","north macedonia",
+  "norway","oman","pakistan","palau","palestine","panama","papua new guinea",
+  "paraguay","peru","philippines","poland","portugal","qatar","romania",
+  "russia","rwanda","saint kitts and nevis","saint lucia",
+  "saint vincent and the grenadines","samoa","san marino",
+  "sao tome and principe","saudi arabia","senegal","serbia","seychelles",
+  "sierra leone","singapore","slovakia","slovenia","solomon islands",
+  "somalia","south africa","south korea","south sudan","spain","sri lanka",
+  "sudan","suriname","sweden","switzerland","syria","taiwan","tajikistan",
+  "tanzania","thailand","timor-leste","togo","tonga","trinidad and tobago",
+  "tunisia","turkey","turkmenistan","tuvalu","uganda","ukraine",
+  "united arab emirates","uae","united kingdom","uk","england","scotland",
+  "wales","northern ireland","united states","usa","us","uruguay",
+  "uzbekistan","vanuatu","venezuela","vietnam","yemen","zambia","zimbabwe",
+  // abreviaciones
+  "eeuu","ee.uu","u.s.a","u.k"
 ];
 
 function isPaisValido(val) {
@@ -567,92 +624,4 @@ function showResults(room) {
   $("scoreBoard").innerHTML=sorted.map((pid,i)=>`
     <div class="score-row">
       <div class="score-rank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${medals[i]||i+1}</div>
-      <div class="score-name">${ts[pid].name}${pid===G.id?" 👈":""}</div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
-        <div class="score-pts">${ts[pid].total||0}</div>
-        <div class="score-badge">+${rs[pid]?.pts||0} esta ronda</div>
-      </div>
-    </div>`).join("");
-
-  let html="";
-  CATS.forEach(cat=>{
-    const catVals={};
-    Object.keys(allAns).forEach(pid=>{
-      catVals[pid]={name:allAns[pid].name, val:(allAns[pid].answers?.[cat.id]||"").trim()};
-    });
-    const counts={};
-    Object.values(catVals).forEach(({val})=>{
-      if(val){const k=val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); counts[k]=(counts[k]||0)+1;}
-    });
-
-    html+=`<div class="cat-section">
-      <div class="cat-section-title">${cat.icon} ${cat.name}${cat.validate?" 🌍":""}</div>`;
-    Object.keys(catVals).forEach(pid=>{
-      const {name,val}=catVals[pid];
-      const vNorm=val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-      const startsOk=vNorm.startsWith(letter);
-      const countryOk=cat.validate?isPaisValido(val):true;
-      const cls=!val?"empty":!startsOk?"wrong":cat.validate&&!countryOk?"invalid-country":counts[vNorm]===1?"unique":"shared";
-      const suffix=cls==="unique"?" ★":cls==="shared"?" (repetida)":cls==="invalid-country"?" ✗ (país inválido)":cls==="wrong"?" ✗":"";
-      const show=!val?"(vacío)":val+suffix;
-      html+=`<div class="answer-item ${cls}">
-        <span class="aname">${name}</span>
-        <span class="aval">${show}</span>
-      </div>`;
-    });
-    html+="</div>";
-  });
-  $("answersReview").innerHTML=html;
-
-  $("nextRoundHost").style.display=G.isHost?"block":"none";
-  $("nextRoundGuest").style.display=G.isHost?"none":"block";
-  if(!G.isHost){ G.poll=setInterval(pollResults,2000); }
-}
-
-async function pollResults() {
-  const room=await dbGet(`rooms/${G.room}`);
-  if(!room)return;
-  if(room.phase==="playing"){
-    stopPoll(); G.round=room.round; G.letter=room.letter;
-    G.scores=room.scores||{}; G.phase="playing"; startRound();
-  }
-  if(room.phase==="final"){
-    stopPoll(); G.scores=room.scores||{}; G.phase="final"; showFinal();
-  }
-}
-
-async function nextRound() {
-  const letter=rndLetter();
-  G.round++; G.letter=letter; G.phase="playing";
-  await dbPatch(`rooms/${G.room}`,{phase:"playing",round:G.round,letter,stopper:null,answers:{},roundScores:{}});
-  startRound();
-}
-
-async function endGame() {
-  await dbPatch(`rooms/${G.room}`,{phase:"final"});
-  showFinal();
-}
-
-function showFinal() {
-  stopPoll(); stopTimer(); screen("screenFinal");
-  const sorted=Object.keys(G.scores).sort((a,b)=>(G.scores[b].total||0)-(G.scores[a].total||0));
-  const medals=["🥇","🥈","🥉"];
-  $("finalBoard").innerHTML=sorted.map((pid,i)=>`
-    <div class="score-row" style="${pid===G.id?"background:#EAFAF1;border-radius:10px;padding:10px 8px;":""}">
-      <div class="score-rank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${medals[i]||i+1}</div>
-      <div class="score-name">${G.scores[pid].name}${pid===G.id?" 👈":""}</div>
-      <div class="score-pts">${G.scores[pid].total||0} pts</div>
-    </div>`).join("");
-}
-
-function goHome() {
-  stopPoll(); stopTimer();
-  G={id:null,name:null,room:null,isHost:false,round:0,letter:null,scores:{},phase:"home",poll:null,timer:null,timerSec:90,submitted:false,stopped:false};
-  screen("screenHome");
-}
-
-$("playerName").addEventListener("keydown",e=>{if(e.key==="Enter")$("joinCode").focus();});
-$("joinCode").addEventListener("keydown",e=>{if(e.key==="Enter")joinRoom();});
-</script>
-</body>
-</html>
+      <div class="score-name">${ts[pid].name}${pid
