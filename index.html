@@ -54,6 +54,7 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
 .cat-input { flex:1; padding:8px 12px; border:2px solid transparent; border-radius:8px; font-size:15px; font-family:'Nunito',sans-serif; font-weight:700; background:white; outline:none; transition:border-color 0.2s; }
 .cat-input:focus { border-color:var(--green); }
 .cat-input.filled { border-color:var(--green); background:#F0FBF5; }
+.cat-input.invalid { border-color:var(--red); background:#FFF0F0; }
 .cat-input:disabled { opacity:0.6; background:#f0f0f0; }
 
 .timer-wrap { display:flex; justify-content:center; margin-bottom:10px; }
@@ -91,6 +92,7 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
 .answer-item.wrong .aval { color:var(--red); text-decoration:line-through; }
 .answer-item.shared .aval { color:var(--orange); }
 .answer-item.empty .aval { color:#ccc; font-style:italic; }
+.answer-item.invalid-country .aval { color:var(--red); text-decoration:line-through; }
 
 .room-code { font-family:'Fredoka One',cursive; font-size:52px; letter-spacing:8px; background:linear-gradient(135deg,#667eea,#764ba2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; text-align:center; }
 .room-hint { font-size:13px; color:var(--gray); font-weight:600; text-align:center; margin-top:4px; }
@@ -115,6 +117,9 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
 .cat-section-title { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:6px; display:flex; align-items:center; gap:6px; }
 .answers-scroll { max-height:320px; overflow-y:auto; }
 
+.country-hint { font-size:10px; color:var(--red); font-weight:700; padding:2px 8px 4px 44px; display:none; }
+.country-hint.show { display:block; }
+
 @media (max-width:380px) {
   .game-title { font-size:38px; }
   .letter-big { font-size:78px; }
@@ -130,19 +135,15 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
     <div class="game-title">Tutti Frutti</div>
     <div class="game-sub">🍓 Grupo Thera · Multijugador en tiempo real</div>
   </div>
-
   <div class="card">
     <div class="card-title">Tu nombre</div>
     <input type="text" id="playerName" placeholder="¿Cómo te llamás?" maxlength="16" />
   </div>
-
   <div class="card">
     <div class="card-title">Crear sala nueva</div>
     <button class="btn btn-green" onclick="createRoom()">🎮 Crear sala (anfitrión)</button>
   </div>
-
   <div class="divider">— o unirse a una sala —</div>
-
   <div class="card">
     <div class="card-title">Tengo un código</div>
     <div style="display:flex;flex-direction:column;gap:10px;">
@@ -152,15 +153,14 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
       <button class="btn btn-yellow" onclick="joinRoom()">🚪 Unirse a la sala</button>
     </div>
   </div>
-
   <div class="card" style="background:#FFF9E6;border:1.5px solid #F1C40F;">
     <div style="font-size:13px;color:#7D6608;line-height:1.8;">
       <strong>📋 Cómo jugar:</strong><br>
       1. El anfitrión crea sala y comparte el código<br>
       2. Todos se unen con ese código<br>
-      3. Sale una letra aleatoria — ¡completá todo!<br>
+      3. Sale una letra — ¡completá las 7 categorías!<br>
       4. El primero en tocar <strong>¡STOP!</strong> para la ronda<br>
-      5. Respuesta única = 100pts · Repetida = 50pts 🏆
+      5. Única = 100pts · Repetida = 50pts · País inválido = 0pts 🌍
     </div>
   </div>
 </div>
@@ -170,7 +170,6 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
   <div class="game-header">
     <div class="game-title" style="font-size:36px;">Sala de espera</div>
   </div>
-
   <div class="card">
     <div class="card-title">Código — compartí con el grupo</div>
     <div class="room-code" id="lobbyCode">------</div>
@@ -178,12 +177,10 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
     <button class="btn btn-outline" style="margin-top:12px;" onclick="copyCode()">📋 Copiar código</button>
     <button class="btn btn-outline" style="margin-top:8px;" onclick="shareCode()">📲 Compartir por WhatsApp</button>
   </div>
-
   <div class="card">
     <div class="card-title">Jugadores (<span id="playerCount">1</span>)</div>
     <div class="players-grid" id="lobbyPlayers"></div>
   </div>
-
   <div id="hostControls" style="display:none;">
     <div class="status-bar green">¡Sos el anfitrión! Iniciá cuando estén todos.</div>
     <button class="btn btn-purple" onclick="startGame()">🚀 ¡Empezar juego!</button>
@@ -191,7 +188,6 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
   <div id="guestWaiting" style="display:none;">
     <div class="status-bar blue">Esperando que el anfitrión inicie <span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span></div>
   </div>
-
   <button class="btn btn-outline" style="margin-top:12px;" onclick="leaveRoom()">← Salir</button>
 </div>
 
@@ -207,22 +203,17 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
       <div class="timer-lbl">SEG</div>
     </div>
   </div>
-
   <div id="stopBanner" style="display:none;" class="status-bar red">
     🛑 <strong id="stopperName"></strong> gritó ¡STOP! Tenés 10 seg para terminar...
   </div>
-
   <div class="letter-display">
     <span class="letter-big" id="currentLetter">A</span>
     <div class="letter-label">Letra de la ronda</div>
   </div>
-
   <div class="card" style="padding:14px;">
     <div class="categories" id="categoriesForm"></div>
   </div>
-
   <button class="stop-btn" id="stopBtn" onclick="callStop()">✋ ¡STOP!</button>
-
   <div style="margin-top:14px;">
     <div style="font-size:11px;font-weight:800;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Jugadores</div>
     <div class="players-grid" id="playPlayers"></div>
@@ -235,17 +226,14 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
     <div class="game-title" style="font-size:36px;">Resultados</div>
     <div class="game-sub">Ronda <span id="resultRound">1</span> · Letra <span id="resultLetter">A</span></div>
   </div>
-
   <div class="card">
     <div class="card-title">🏆 Puntaje acumulado</div>
     <div id="scoreBoard"></div>
   </div>
-
   <div class="card">
     <div class="card-title">📋 Respuestas de esta ronda</div>
     <div class="answers-scroll" id="answersReview"></div>
   </div>
-
   <div id="nextRoundHost" style="display:none;margin-top:6px;">
     <button class="btn btn-green" onclick="nextRound()" style="margin-bottom:8px;">▶ Siguiente ronda</button>
     <button class="btn btn-red" onclick="endGame()">🏁 Terminar juego</button>
@@ -273,31 +261,72 @@ input[type=text]::placeholder { color:#ccc; font-weight:600; }
 <script>
 const DB = "https://grupo-thera---tutti-fruti-default-rtdb.firebaseio.com";
 
+// ── LISTA COMPLETA DE PAÍSES DEL MUNDO (en español) ──
+const PAISES = [
+  "afganistán","albania","alemania","andorra","angola","antigua y barbuda","arabia saudita",
+  "argelia","argentina","armenia","australia","austria","azerbaiyán","bahamas","bangladés",
+  "barbados","baréin","bélgica","belice","benín","bielorrusia","birmania","bolivia",
+  "bosnia y herzegovina","botswana","brasil","brunéi","bulgaria","burkina faso","burundi",
+  "bután","cabo verde","camboya","camerún","canadá","catar","chad","chile","china","chipre",
+  "colombia","comoras","congo","corea del norte","corea del sur","costa de marfil","costa rica",
+  "croacia","cuba","dinamarca","dominica","ecuador","egipto","el salvador","emiratos árabes unidos",
+  "eritrea","eslovaquia","eslovenia","españa","estados unidos","estonia","etiopía","filipinas",
+  "finlandia","fiyi","francia","gabón","gambia","georgia","ghana","granada","grecia","guatemala",
+  "guinea","guinea ecuatorial","guinea-bisáu","guyana","haití","honduras","hungría","india",
+  "indonesia","irak","irán","irlanda","islandia","islas marshall","islas salomón","israel",
+  "italia","jamaica","japón","jordania","kazajistán","kenia","kirguistán","kiribati","kuwait",
+  "laos","lesoto","letonia","líbano","liberia","libia","liechtenstein","lituania","luxemburgo",
+  "madagascar","malasia","malaui","maldivas","malí","malta","marruecos","mauricio","mauritania",
+  "méxico","micronesia","moldavia","mónaco","mongolia","montenegro","mozambique","namibia",
+  "nauru","nepal","nicaragua","níger","nigeria","noruega","nueva zelanda","omán","países bajos",
+  "pakistán","palaos","panamá","papúa nueva guinea","paraguay","perú","polonia","portugal",
+  "reino unido","república centroafricana","república checa","república democrática del congo",
+  "república dominicana","ruanda","rumania","rusia","samoa","san cristóbal y nieves",
+  "san marino","san vicente y las granadinas","santa lucía","santo tomé y príncipe","senegal",
+  "serbia","seychelles","sierra leona","singapur","siria","somalia","sri lanka","suazilandia",
+  "sudáfrica","sudán","sudán del sur","suecia","suiza","surinam","tailandia","tanzania",
+  "tayikistán","timor oriental","togo","tonga","trinidad y tobago","túnez","turkmenistán",
+  "turquía","tuvalu","ucrania","uganda","uruguay","uzbekistán","vanuatu","venezuela",
+  "vietnam","yemen","yibuti","zambia","zimbabue",
+  // variantes comunes
+  "usa","eeuu","estados unidos de america","usa","uk","ee.uu"
+];
+
+function isPaisValido(val) {
+  if (!val) return false;
+  const v = val.toLowerCase().trim()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  return PAISES.some(p => {
+    const pn = p.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    return pn === v || pn.startsWith(v) && v.length >= 3;
+  });
+}
+
 const CATS = [
-  {id:"nombre",   icon:"👤", name:"Nombre"},
-  {id:"apellido", icon:"👨‍👩‍👧", name:"Apellido"},
-  {id:"ciudad",   icon:"🏙️", name:"Ciudad"},
-  {id:"animal",   icon:"🐾", name:"Animal"},
-  {id:"fruta",    icon:"🍓", name:"Fruta"},
-  {id:"color",    icon:"🎨", name:"Color"},
-  {id:"cosa",     icon:"📦", name:"Cosa"},
+  {id:"nombre",   icon:"👤", name:"Nombre",   validate:false},
+  {id:"apellido", icon:"👨‍👩‍👧", name:"Apellido", validate:false},
+  {id:"pais",     icon:"🌍", name:"País",      validate:true},
+  {id:"animal",   icon:"🐾", name:"Animal",   validate:false},
+  {id:"fruta",    icon:"🍓", name:"Fruta",    validate:false},
+  {id:"color",    icon:"🎨", name:"Color",    validate:false},
+  {id:"cosa",     icon:"📦", name:"Cosa",     validate:false},
 ];
 const LETTERS = "ABCDEFGHIJLMNOPRSTV".split("");
 
 let G = { id:null, name:null, room:null, isHost:false, round:0, letter:null,
           scores:{}, phase:"home", poll:null, timer:null, timerSec:90, submitted:false, stopped:false };
 
-// ── FIREBASE REST ──
-const dbSet = (p,d) => fetch(`${DB}/${p}.json`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
-const dbPatch = (p,d) => fetch(`${DB}/${p}.json`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
-const dbGet = async p => (await fetch(`${DB}/${p}.json`)).json();
-const dbDel = p => fetch(`${DB}/${p}.json`,{method:"DELETE"});
+const DB_URL = DB;
+const dbSet = (p,d) => fetch(`${DB_URL}/${p}.json`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
+const dbPatch = (p,d) => fetch(`${DB_URL}/${p}.json`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
+const dbGet = async p => (await fetch(`${DB_URL}/${p}.json`)).json();
+const dbDel = p => fetch(`${DB_URL}/${p}.json`,{method:"DELETE"});
 
-// ── HELPERS ──
 const uid = () => Math.random().toString(36).slice(2,9);
 const code = () => Math.random().toString(36).slice(2,8).toUpperCase();
 const rndLetter = () => LETTERS[Math.floor(Math.random()*LETTERS.length)];
 const $ = id => document.getElementById(id);
+
 function toast(msg, ms=2800) {
   const t=$("toast"); t.textContent=msg; t.classList.add("show");
   setTimeout(()=>t.classList.remove("show"),ms);
@@ -311,9 +340,9 @@ function stopTimer() { if(G.timer) clearInterval(G.timer); G.timer=null; }
 
 // ── HOME ──
 async function createRoom() {
-  const name = $("playerName").value.trim();
+  const name=$("playerName").value.trim();
   if(!name){toast("✏️ Escribí tu nombre");return;}
-  G.id=uid(); G.name=name; G.room=code(); G.isHost=true; G.scores={}; G.round=0;
+  G.id=uid(); G.name=name; G.room=code(); G.isHost=true; G.scores={};
   G.scores[G.id]={name,total:0};
   await dbSet(`rooms/${G.room}`,{
     host:G.id, phase:"lobby", round:0, letter:null, stopper:null,
@@ -369,7 +398,7 @@ function copyCode() {
 }
 
 function shareCode() {
-  const msg=`🍓 *¡Tutti Frutti en vivo!*\nGrupo Thera - ¡A jugar!\n\n🔑 Código de sala: *${G.room}*\n\n👇 Entrá desde este link y usá el código:\nhttps://sandrasegovia1995-pixel.github.io/BINGO-HOSPITALAR/tutti-frutti.html`;
+  const msg=`🍓 *¡Tutti Frutti en vivo!*\nGrupo Thera - ¡A jugar!\n\n🔑 Código de sala: *${G.room}*\n\n👇 Entrá al juego:\nhttps://grupothera2026.github.io/tutti-frutti/`;
   window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,"_blank");
 }
 
@@ -396,20 +425,36 @@ function startRound() {
   $("stopBanner").style.display="none";
   $("stopBtn").disabled=false;
 
-  // Build form
   $("categoriesForm").innerHTML=CATS.map(c=>`
-    <div class="cat-row">
-      <div class="cat-icon">${c.icon}</div>
-      <div class="cat-name">${c.name}</div>
-      <input class="cat-input" id="ans_${c.id}" type="text"
-        placeholder="${G.letter}..." maxlength="30"
-        oninput="this.classList.toggle('filled',this.value.trim().length>0)"
-        autocomplete="off" autocorrect="off" spellcheck="false" />
+    <div>
+      <div class="cat-row">
+        <div class="cat-icon">${c.icon}</div>
+        <div class="cat-name">${c.name}</div>
+        <input class="cat-input" id="ans_${c.id}" type="text"
+          placeholder="${G.letter}..." maxlength="30"
+          oninput="onInput(this,'${c.id}',${c.validate})"
+          autocomplete="off" autocorrect="off" spellcheck="false" />
+      </div>
+      ${c.validate?`<div class="country-hint" id="hint_${c.id}">❌ País no válido o no empieza con ${G.letter}</div>`:""}
     </div>`).join("");
 
   screen("screenPlay");
   runTimer();
   G.poll=setInterval(pollPlay,1800);
+}
+
+function onInput(el, catId, validate) {
+  const val = el.value.trim();
+  el.classList.toggle("filled", val.length>0);
+  if (validate && val.length >= 2) {
+    const letter = G.letter.toLowerCase();
+    const startsOk = val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").startsWith(letter);
+    const valid = startsOk && isPaisValido(val);
+    el.classList.toggle("invalid", val.length>=3 && !valid);
+    el.classList.toggle("filled", valid);
+    const hint = $(`hint_${catId}`);
+    if(hint) hint.classList.toggle("show", val.length>=3 && !valid);
+  }
 }
 
 function runTimer() {
@@ -424,13 +469,11 @@ function runTimer() {
 async function pollPlay() {
   const room=await dbGet(`rooms/${G.room}`);
   if(!room)return;
-  // Players status
   const ps=room.players||{}, ans=room.answers||{};
   $("playPlayers").innerHTML=Object.keys(ps).map(k=>`
     <div class="player-chip ${k===room.host?"host":""} ${ans[k]?"done":""}">
       <div class="dot"></div>${ps[k].name}${ans[k]?" ✓":""}
     </div>`).join("");
-  // Stopper
   if(room.stopper&&!G.stopped){
     G.stopped=true;
     $("stopperName").textContent=room.stopper;
@@ -439,15 +482,12 @@ async function pollPlay() {
     stopTimer();
     setTimeout(()=>submitAnswers(),10000);
   }
-  // Phase transitions
   if(room.phase==="results"&&G.phase==="playing"){
-    stopPoll(); stopTimer();
-    G.phase="results"; G.scores=room.scores||{};
+    stopPoll(); stopTimer(); G.phase="results"; G.scores=room.scores||{};
     showResults(room);
   }
   if(room.phase==="final"&&G.phase==="playing"){
-    stopPoll(); stopTimer();
-    G.phase="final"; G.scores=room.scores||{};
+    stopPoll(); stopTimer(); G.phase="final"; G.scores=room.scores||{};
     showFinal();
   }
 }
@@ -467,7 +507,6 @@ async function callStop() {
 async function submitAnswers() {
   if(G.submitted)return;
   G.submitted=true;
-  // Disable all inputs
   CATS.forEach(c=>{const el=$(`ans_${c.id}`);if(el)el.disabled=true;});
   const answers={};
   CATS.forEach(c=>{ answers[c.id]=($(`ans_${c.id}`)?.value||"").trim(); });
@@ -475,7 +514,7 @@ async function submitAnswers() {
   if(G.isHost) setTimeout(()=>calcResults(),4000);
 }
 
-// ── CALC (host only) ──
+// ── CÁLCULO ──
 async function calcResults() {
   const room=await dbGet(`rooms/${G.room}`);
   const allAns=room.answers||{};
@@ -486,13 +525,20 @@ async function calcResults() {
   CATS.forEach(cat=>{
     const vals={};
     Object.keys(allAns).forEach(pid=>{
-      vals[pid]=(allAns[pid].answers?.[cat.id]||"").trim().toLowerCase();
+      vals[pid]=(allAns[pid].answers?.[cat.id]||"").trim().toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
     });
     const counts={};
     Object.values(vals).forEach(v=>{if(v)counts[v]=(counts[v]||0)+1;});
+
     Object.keys(vals).forEach(pid=>{
       const v=vals[pid];
       if(!v||!v.startsWith(letter))return;
+      // Para país, validar contra la lista
+      if(cat.validate){
+        const originalVal=(allAns[pid].answers?.[cat.id]||"").trim();
+        if(!isPaisValido(originalVal))return;
+      }
       roundScores[pid].pts+=counts[v]===1?100:50;
     });
   });
@@ -506,7 +552,7 @@ async function calcResults() {
   await dbPatch(`rooms/${G.room}`,{phase:"results",roundScores,scores:updScores});
 }
 
-// ── RESULTS ──
+// ── RESULTADOS ──
 function showResults(room) {
   stopPoll();
   screen("screenResults");
@@ -516,7 +562,6 @@ function showResults(room) {
   const rs=room.roundScores||{}, ts=room.scores||{}, allAns=room.answers||{};
   const letter=(room.letter||G.letter||"").toLowerCase();
 
-  // Scoreboard
   const sorted=Object.keys(ts).sort((a,b)=>(ts[b].total||0)-(ts[a].total||0));
   const medals=["🥇","🥈","🥉"];
   $("scoreBoard").innerHTML=sorted.map((pid,i)=>`
@@ -529,7 +574,6 @@ function showResults(room) {
       </div>
     </div>`).join("");
 
-  // Answers by category
   let html="";
   CATS.forEach(cat=>{
     const catVals={};
@@ -537,18 +581,23 @@ function showResults(room) {
       catVals[pid]={name:allAns[pid].name, val:(allAns[pid].answers?.[cat.id]||"").trim()};
     });
     const counts={};
-    Object.values(catVals).forEach(({val})=>{if(val)counts[val.toLowerCase()]=(counts[val.toLowerCase()]||0)+1;});
+    Object.values(catVals).forEach(({val})=>{
+      if(val){const k=val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); counts[k]=(counts[k]||0)+1;}
+    });
 
     html+=`<div class="cat-section">
-      <div class="cat-section-title">${cat.icon} ${cat.name}</div>`;
+      <div class="cat-section-title">${cat.icon} ${cat.name}${cat.validate?" 🌍":""}</div>`;
     Object.keys(catVals).forEach(pid=>{
       const {name,val}=catVals[pid];
-      const valid=val&&val.toLowerCase().startsWith(letter);
-      const cls=!val?"empty":!valid?"wrong":counts[val.toLowerCase()]===1?"unique":"shared";
-      const show=!val?"(vacío)":!valid?`${val} ✗`:val;
+      const vNorm=val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+      const startsOk=vNorm.startsWith(letter);
+      const countryOk=cat.validate?isPaisValido(val):true;
+      const cls=!val?"empty":!startsOk?"wrong":cat.validate&&!countryOk?"invalid-country":counts[vNorm]===1?"unique":"shared";
+      const suffix=cls==="unique"?" ★":cls==="shared"?" (repetida)":cls==="invalid-country"?" ✗ (país inválido)":cls==="wrong"?" ✗":"";
+      const show=!val?"(vacío)":val+suffix;
       html+=`<div class="answer-item ${cls}">
         <span class="aname">${name}</span>
-        <span class="aval">${show}${cls==="unique"?" ★":cls==="shared"?" (repetida)":""}</span>
+        <span class="aval">${show}</span>
       </div>`;
     });
     html+="</div>";
@@ -565,8 +614,7 @@ async function pollResults() {
   if(!room)return;
   if(room.phase==="playing"){
     stopPoll(); G.round=room.round; G.letter=room.letter;
-    G.scores=room.scores||{}; G.phase="playing";
-    startRound();
+    G.scores=room.scores||{}; G.phase="playing"; startRound();
   }
   if(room.phase==="final"){
     stopPoll(); G.scores=room.scores||{}; G.phase="final"; showFinal();
@@ -585,10 +633,8 @@ async function endGame() {
   showFinal();
 }
 
-// ── FINAL ──
 function showFinal() {
-  stopPoll(); stopTimer();
-  screen("screenFinal");
+  stopPoll(); stopTimer(); screen("screenFinal");
   const sorted=Object.keys(G.scores).sort((a,b)=>(G.scores[b].total||0)-(G.scores[a].total||0));
   const medals=["🥇","🥈","🥉"];
   $("finalBoard").innerHTML=sorted.map((pid,i)=>`
@@ -605,7 +651,6 @@ function goHome() {
   screen("screenHome");
 }
 
-// Enter key
 $("playerName").addEventListener("keydown",e=>{if(e.key==="Enter")$("joinCode").focus();});
 $("joinCode").addEventListener("keydown",e=>{if(e.key==="Enter")joinRoom();});
 </script>
