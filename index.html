@@ -622,6 +622,93 @@ function showResults(room) {
   const sorted=Object.keys(ts).sort((a,b)=>(ts[b].total||0)-(ts[a].total||0));
   const medals=["🥇","🥈","🥉"];
   $("scoreBoard").innerHTML=sorted.map((pid,i)=>`
-    <div class="score-row">
+   <div class="score-row">
       <div class="score-rank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${medals[i]||i+1}</div>
-      <div class="score-name">${ts[pid].name}${pid
+      <div class="score-name">${ts[pid].name}${pid===G.id?" 👈":""}</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+        <div class="score-pts">${ts[pid].total||0}</div>
+        <div class="score-badge">+${rs[pid]?.pts||0} esta ronda</div>
+      </div>
+    </div>`).join("");
+
+  let html="";
+  CATS.forEach(cat=>{
+    const catVals={};
+    Object.keys(allAns).forEach(pid=>{
+      catVals[pid]={name:allAns[pid].name, val:(allAns[pid].answers?.[cat.id]||"").trim()};
+    });
+    const counts={};
+    Object.values(catVals).forEach(({val})=>{
+      if(val){const k=val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); counts[k]=(counts[k]||0)+1;}
+    });
+    html+=`<div class="cat-section">
+      <div class="cat-section-title">${cat.icon} ${cat.name}${cat.validate?" 🌍":""}</div>`;
+    Object.keys(catVals).forEach(pid=>{
+      const {name,val}=catVals[pid];
+      const vNorm=val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+      const startsOk=vNorm.startsWith(letter);
+      const countryOk=cat.validate?isPaisValido(val):true;
+      const cls=!val?"empty":!startsOk?"wrong":cat.validate&&!countryOk?"invalid-country":counts[vNorm]===1?"unique":"shared";
+      const suffix=cls==="unique"?" ★":cls==="shared"?" (repetida)":cls==="invalid-country"?" ✗ (país inválido)":cls==="wrong"?" ✗":"";
+      const show=!val?"(vacío)":val+suffix;
+      html+=`<div class="answer-item ${cls}">
+        <span class="aname">${name}</span>
+        <span class="aval">${show}</span>
+      </div>`;
+    });
+    html+="</div>";
+  });
+  $("answersReview").innerHTML=html;
+
+  $("nextRoundHost").style.display=G.isHost?"block":"none";
+  $("nextRoundGuest").style.display=G.isHost?"none":"block";
+  if(!G.isHost){ G.poll=setInterval(pollResults,2000); }
+}
+
+async function pollResults() {
+  const room=await dbGet(`rooms/${G.room}`);
+  if(!room)return;
+  if(room.phase==="playing"){
+    stopPoll(); G.round=room.round; G.letter=room.letter;
+    G.scores=room.scores||{}; G.phase="playing"; startRound();
+  }
+  if(room.phase==="final"){
+    stopPoll(); G.scores=room.scores||{}; G.phase="final"; showFinal();
+  }
+}
+
+async function nextRound() {
+  const letter=rndLetter();
+  G.round++; G.letter=letter; G.phase="playing";
+  await dbPatch(`rooms/${G.room}`,{phase:"playing",round:G.round,letter,stopper:null,answers:{},roundScores:{}});
+  startRound();
+}
+
+async function endGame() {
+  await dbPatch(`rooms/${G.room}`,{phase:"final"});
+  showFinal();
+}
+
+function showFinal() {
+  stopPoll(); stopTimer(); screen("screenFinal");
+  const sorted=Object.keys(G.scores).sort((a,b)=>(G.scores[b].total||0)-(G.scores[a].total||0));
+  const medals=["🥇","🥈","🥉"];
+  $("finalBoard").innerHTML=sorted.map((pid,i)=>`
+    <div class="score-row" style="${pid===G.id?"background:#EAFAF1;border-radius:10px;padding:10px 8px;":""}">
+      <div class="score-rank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${medals[i]||i+1}</div>
+      <div class="score-name">${G.scores[pid].name}${pid===G.id?" 👈":""}</div>
+      <div class="score-pts">${G.scores[pid].total||0} pts</div>
+    </div>`).join("");
+}
+
+function goHome() {
+  stopPoll(); stopTimer();
+  G={id:null,name:null,room:null,isHost:false,round:0,letter:null,scores:{},phase:"home",poll:null,timer:null,timerSec:90,submitted:false,stopped:false};
+  screen("screenHome");
+}
+
+$("playerName").addEventListener("keydown",e=>{if(e.key==="Enter")$("joinCode").focus();});
+$("joinCode").addEventListener("keydown",e=>{if(e.key==="Enter")joinRoom();});
+</script>
+</body>
+</html>
